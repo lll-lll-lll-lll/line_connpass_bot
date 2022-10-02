@@ -22,11 +22,7 @@ func main() {
 	http.Handle("/callback", LINEClientMiddleware(lineHandler))
 
 	// Determine port for HTTP service.
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-		log.Printf("defaulting to port %s", port)
-	}
+	port := "8080"
 
 	// Start HTTP server.
 	log.Printf("listening on port %s", port)
