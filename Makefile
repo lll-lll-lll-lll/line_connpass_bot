@@ -8,3 +8,6 @@ _create_new_artifact_repo:
 
 _repo_list:
 	gcloud source repos list  
+
+_start_local_docker:
+	gcloud beta code dev

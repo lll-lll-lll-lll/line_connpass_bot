@@ -22,7 +22,11 @@ func main() {
 	http.Handle("/callback", LINEClientMiddleware(lineHandler))
 
 	// Determine port for HTTP service.
-	port := "8080"
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("defaulting to port %s", port)
+	}
 
 	// Start HTTP server.
 	log.Printf("listening on port %s", port)
@@ -41,7 +45,13 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello %s!\n", name)
 }
 
-func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {}
+func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
+	name := os.Getenv("NAME")
+	if name == "" {
+		name = "World"
+	}
+	fmt.Fprintf(w, "Hello %s!\n", name)
+}
 
 func LINEClientMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
