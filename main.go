@@ -41,11 +41,26 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
-	name := os.Getenv("NAME")
-	if name == "" {
-		name = "World"
+	events, e := GetLINEEvents(r.Context())
+	if e == false {
+		log.Print("no event")
+		return
 	}
-	fmt.Fprintf(w, "Hello %s!\n", name)
+	bot, e := GetLINEClient(r.Context())
+	if e == false {
+		log.Panicln("no client")
+		return
+	}
+	for _, event := range events {
+		if event.Type == linebot.EventTypeMessage {
+			switch message := event.Message.(type) {
+			case *linebot.TextMessage:
+				if _, err := bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
+					log.Print(err)
+				}
+			}
+		}
+	}
 }
 
 func LINEClientMiddleware(next http.Handler) http.Handler {
