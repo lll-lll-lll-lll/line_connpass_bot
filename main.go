@@ -13,11 +13,13 @@ import (
 
 func main() {
 	if err := godotenv.Load(".env"); err != nil {
-		log.Println("環境変数ファイルを読み込めませんでした")
+		log.Println(err)
 		return
 	}
+	http.HandleFunc("/", pingHandler)
 
-	http.HandleFunc("/callback", handler)
+	lineHandler := http.HandlerFunc(LINEWebhookHandler)
+	http.Handle("/callback", LINEClientMiddleware(lineHandler))
 
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
@@ -34,7 +36,7 @@ func main() {
 	}
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func pingHandler(w http.ResponseWriter, r *http.Request) {
 
 	name := os.Getenv("NAME")
 	if name == "" {
@@ -43,40 +45,36 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello %s!\n", name)
 }
 
-func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
+func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {}
 
-}
-
-func LINEClientMiddleware(h http.Handler) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			bot, err := linebot.New(
-				os.Getenv("CHANNEL_SECRET"),
-				os.Getenv("CHANNEL_TOKEN"),
-			)
-			if err != nil {
-				log.Println(err)
+func LINEClientMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		bot, err := linebot.New(
+			os.Getenv("CHANNEL_SECRET"),
+			os.Getenv("CHANNEL_TOKEN"),
+		)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		// clientをハンドラー間で共有するためにコンテキストに登録
+		SetLINEClientCtx(r.Context(), bot)
+		events, err := bot.ParseRequest(r)
+		if err != nil {
+			if err == linebot.ErrInvalidSignature {
 				w.WriteHeader(http.StatusBadRequest)
 				return
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
-			// clientをハンドラー間で共有するためにコンテキストに登録
-			SetLINEClientCtx(r.Context(), bot)
-			events, err := bot.ParseRequest(r)
-			if err != nil {
-				if err == linebot.ErrInvalidSignature {
-					w.WriteHeader(http.StatusBadRequest)
-					return
-				} else {
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-			}
-			// イベントもハンドラー間で共有するためにコンテキストに登録。※イベントは正直コンテキストに入れず、橋渡ししてもいいかも知らない
-			SetLINEEventsCtx(r.Context(), events)
+		}
+		// イベントもハンドラー間で共有するためにコンテキストに登録。※イベントは正直コンテキストに入れず、橋渡ししてもいいかも知らない
+		SetLINEEventsCtx(r.Context(), events)
 
-			next.ServeHTTP(w, r)
-		})
-	}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func SetLINEClientCtx(ctx context.Context, bot *linebot.Client) context.Context {
