@@ -9,5 +9,6 @@ _create_new_artifact_repo:
 _repo_list:
 	gcloud source repos list  
 
-_start_local_docker:
+# Cloud Run service in a local development environment
+_local_dev:
 	gcloud beta code dev
