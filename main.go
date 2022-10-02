@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -42,15 +43,16 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 
 func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	events, e := GetLINEEvents(r.Context())
-	if e == false {
+	if e != nil {
 		log.Print("no event")
 		return
 	}
 	bot, e := GetLINEClient(r.Context())
-	if e == false {
+	if e != nil {
 		log.Panicln("no client")
 		return
 	}
+
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
@@ -65,6 +67,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 func LINEClientMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		bot, err := linebot.New(
 			os.Getenv("CHANNEL_SECRET"),
 			os.Getenv("CHANNEL_TOKEN"),
@@ -74,8 +77,9 @@ func LINEClientMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
+		ctx := r.Context()
 		// clientをハンドラー間で共有するためにコンテキストに登録
-		SetLINEClientCtx(r.Context(), bot)
+		ctx = SetLINEClientCtx(ctx, bot)
 		events, err := bot.ParseRequest(r)
 		if err != nil {
 			if err == linebot.ErrInvalidSignature {
@@ -87,9 +91,9 @@ func LINEClientMiddleware(next http.Handler) http.Handler {
 			}
 		}
 		// イベントもハンドラー間で共有するためにコンテキストに登録。※イベントは正直コンテキストに入れず、橋渡ししてもいいかも知らない
-		SetLINEEventsCtx(r.Context(), events)
+		ctx = SetLINEEventsCtx(ctx, events)
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
@@ -101,12 +105,18 @@ func SetLINEEventsCtx(ctx context.Context, events []*linebot.Event) context.Cont
 	return context.WithValue(ctx, "events", events)
 }
 
-func GetLINEEvents(ctx context.Context) ([]linebot.Event, bool) {
-	events, err := ctx.Value("events").([]linebot.Event)
-	return events, err
+func GetLINEEvents(ctx context.Context) ([]*linebot.Event, error) {
+	events, ok := ctx.Value("events").([]*linebot.Event)
+	if !ok {
+		return nil, errors.New("events not found")
+	}
+	return events, nil
 }
 
-func GetLINEClient(ctx context.Context) (linebot.Client, bool) {
-	bot, err := ctx.Value(linebot.Client{}).(linebot.Client)
-	return bot, err
+func GetLINEClient(ctx context.Context) (*linebot.Client, error) {
+	bot, ok := ctx.Value(linebot.Client{}).(*linebot.Client)
+	if !ok {
+		return nil, errors.New("client bot not found")
+	}
+	return bot, nil
 }
