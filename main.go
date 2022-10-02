@@ -7,15 +7,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Println(err)
-		return
-	}
 	http.HandleFunc("/", pingHandler)
 
 	lineHandler := http.HandlerFunc(LINEWebhookHandler)
