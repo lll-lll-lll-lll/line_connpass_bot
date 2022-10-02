@@ -20,7 +20,7 @@ steps:
       [
         "build",
         "-t",
-        "us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage",
         ".",
       ]
   # Push the container image to Container Registry
@@ -28,7 +28,7 @@ steps:
     args:
       [
         "push",
-        "us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage",
       ]
   # Deploy container image to Cloud Run
   - name: "gcr.io/cloud-builders/gcloud"
@@ -38,7 +38,7 @@ steps:
         "deploy",
         "myservice",
         "--image",
-        "us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage",
         "--region",
         "us-central1",
         "--platform",
@@ -46,5 +46,5 @@ steps:
         "--allow-unauthenticated",
       ]
 images:
-  - us-central1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage
+  - asia-northeast1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage
 # [END cloudbuild_run_example_builddeploy]
