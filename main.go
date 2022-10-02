@@ -98,11 +98,11 @@ func SetLINEClientCtx(ctx context.Context, bot *linebot.Client) context.Context 
 }
 
 func SetLINEEventsCtx(ctx context.Context, events []*linebot.Event) context.Context {
-	return context.WithValue(ctx, []linebot.Event{}, events)
+	return context.WithValue(ctx, "events", events)
 }
 
 func GetLINEEvents(ctx context.Context) ([]linebot.Event, bool) {
-	events, err := ctx.Value([]linebot.Event{}).([]linebot.Event)
+	events, err := ctx.Value("events").([]linebot.Event)
 	return events, err
 }
 
