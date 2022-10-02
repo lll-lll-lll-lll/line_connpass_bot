@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,8 +11,6 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", pingHandler)
-
 	lineHandler := http.HandlerFunc(LINEWebhookHandler)
 	http.Handle("/callback", LINEClientMiddleware(lineHandler))
 
@@ -30,15 +27,6 @@ func main() {
 		log.Println(err)
 		return
 	}
-}
-
-func pingHandler(w http.ResponseWriter, r *http.Request) {
-
-	name := os.Getenv("NAME")
-	if name == "" {
-		name = "World"
-	}
-	fmt.Fprintf(w, "Hello %s!\n", name)
 }
 
 func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
