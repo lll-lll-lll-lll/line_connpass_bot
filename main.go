@@ -8,6 +8,8 @@ import (
 
 	linecon "github.com/lll-lll-lll-lll/lineconnpass/v1"
 
+	"strconv"
+
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
@@ -96,18 +98,12 @@ func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse)
 	flexs := []*linebot.BubbleContainer{}
 	events := connpassResponse.Events
 	for _, e := range events {
+		joinedNum := strconv.Itoa(e.Accepted)
 		contents := &linebot.BubbleContainer{
 			Type: linebot.FlexContainerTypeBubble,
-			Hero: &linebot.ImageComponent{
-				Type:        "image",
-				URL:         e.Series.Url,
-				Size:        "full",
-				AspectRatio: "20:13",
-				AspectMode:  "cover",
-			},
 			Body: &linebot.BoxComponent{
 				Type:   linebot.FlexComponentTypeBox,
-				Layout: linebot.FlexBoxLayoutTypeHorizontal,
+				Layout: linebot.FlexBoxLayoutTypeVertical,
 				Contents: []linebot.FlexComponent{
 					&linebot.TextComponent{
 						Type:   linebot.FlexComponentTypeText,
@@ -116,9 +112,47 @@ func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse)
 						Size:   "xl",
 						Align:  "center",
 					},
-					&linebot.TextComponent{
-						Type: linebot.FlexComponentTypeText,
-						Text: "World!",
+					&linebot.BoxComponent{
+						Type:    linebot.FlexComponentTypeBox,
+						Layout:  linebot.FlexBoxLayoutTypeVertical,
+						Margin:  linebot.FlexComponentMarginTypeLg,
+						Spacing: linebot.FlexComponentSpacingTypeSm,
+						Contents: []linebot.FlexComponent{
+							&linebot.BoxComponent{
+								Type:    linebot.FlexComponentTypeBox,
+								Layout:  linebot.FlexBoxLayoutTypeBaseline,
+								Spacing: linebot.FlexComponentSpacingTypeSm,
+								Contents: []linebot.FlexComponent{
+									&linebot.TextComponent{
+										Type:  linebot.FlexComponentTypeText,
+										Text:  "参加者",
+										Color: "#aaaaaa",
+										Size:  linebot.FlexTextSizeTypeSm,
+										Flex:  linebot.IntPtr(1),
+									},
+									&linebot.TextComponent{
+										Type:  linebot.FlexComponentTypeText,
+										Text:  joinedNum,
+										Wrap:  true,
+										Color: "#666666",
+										Size:  linebot.FlexTextSizeTypeSm,
+										Flex:  linebot.IntPtr(3),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Footer: &linebot.BoxComponent{
+				Type:    linebot.FlexComponentTypeBox,
+				Layout:  linebot.FlexBoxLayoutTypeVertical,
+				Spacing: linebot.FlexComponentSpacingTypeSm,
+				Contents: []linebot.FlexComponent{
+					&linebot.ButtonComponent{
+						Type:   linebot.FlexComponentTypeButton,
+						Style:  linebot.FlexButtonStyleTypeLink,
+						Height: linebot.FlexButtonHeightTypeSm,
 					},
 				},
 			},
