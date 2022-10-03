@@ -11,7 +11,7 @@ func TestConnpassAPI(t *testing.T) {
 		query := map[string]string{"nickname": con.ConnpassUSER}
 		q := CreateQuery(query)
 		con.Query = q
-		u, err := con.CreateUrl(con.Query)
+		u, err := con.CreateURL(con.Query)
 		if err != nil {
 			t.Error(err)
 			return

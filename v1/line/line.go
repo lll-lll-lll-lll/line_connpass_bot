@@ -23,10 +23,6 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go func() {
-
-	}()
-
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {

@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -19,7 +20,7 @@ func NewConnpass() *Connpass {
 	return &Connpass{}
 }
 
-func (c *Connpass) CreateUrl(q url.Values) (string, error) {
+func (c *Connpass) CreateURL(q url.Values) (string, error) {
 	u, err := url.Parse(CONNPASSAPIV1)
 	if err != nil {
 		return "", fmt.Errorf("%s", err)
@@ -52,4 +53,8 @@ func CreateQuery(values map[string]string) url.Values {
 		q.Add(k, v)
 	}
 	return q
+}
+
+func RequestToConAPI(ctx context.Context) (context.Context, error) {
+	return ctx, nil
 }
