@@ -33,6 +33,5 @@ func TestConnpassAPI(t *testing.T) {
 		if groupsNum != 10 {
 			t.Error("グループ数に間違いあり")
 		}
-
 	})
 }
