@@ -1,9 +1,11 @@
 package v2
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 const CONNPASSAPIV1 = "https://connpass.com/api/v1/event/?"
@@ -21,7 +23,8 @@ func NewConnpass() *Connpass {
 func (c *Connpass) CreateUrl(q url.Values) string {
 	u, err := url.Parse(CONNPASSAPIV1)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return ""
 	}
 	u.Scheme = "https"
 	u.Host = "connpass.com"
@@ -29,10 +32,18 @@ func (c *Connpass) CreateUrl(q url.Values) string {
 	return u.String()
 }
 
-func (c *Connpass) Request(url string) *http.Response {
+func (c *Connpass) Request(url string) (*http.Response, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		log.Println(err)
+		return nil, fmt.Errorf("%s", err)
 	}
-	return res
+	return res, nil
+}
+
+func GetUserName() string {
+	user := os.Getenv("USER")
+	if user == "" {
+		return ""
+	}
+	return user
 }
