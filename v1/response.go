@@ -109,5 +109,5 @@ type ConnpassResponse struct {
 	// 検索の開始位置
 	ResultsStart int `json:"results_start"`
 	// 検索結果のイベントリスト
-	Events []Event `json:"events"`
+	Events []*Event `json:"events"`
 }

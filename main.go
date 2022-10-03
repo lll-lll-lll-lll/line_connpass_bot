@@ -71,17 +71,59 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(fmt.Errorf("no client: %s", e))
 		return
 	}
-
-	titles := conpass.ConnpassResponse.GetGroupTitles()
+	flexMessages := CreateConnpassEventFlexMessages(conpass.ConnpassResponse)
 
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				if _, err := bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(titles[0])).Do(); err != nil {
-					log.Println(fmt.Errorf("no reply message: %v, message: %v", err, message))
+				for _, flexMessage := range flexMessages {
+					if _, err := bot.ReplyMessage(
+						event.ReplyToken,
+						linebot.NewFlexMessage("Flex message alt text", flexMessage),
+					).Do(); err != nil {
+						log.Println(message)
+						return
+					}
 				}
 			}
 		}
 	}
+}
+
+func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse) []*linebot.BubbleContainer {
+
+	flexs := []*linebot.BubbleContainer{}
+	events := connpassResponse.Events
+	for _, e := range events {
+		contents := &linebot.BubbleContainer{
+			Type: linebot.FlexContainerTypeBubble,
+			Hero: &linebot.ImageComponent{
+				Type:        "image",
+				URL:         e.Series.Url,
+				Size:        "full",
+				AspectRatio: "20:13",
+				AspectMode:  "cover",
+			},
+			Body: &linebot.BoxComponent{
+				Type:   linebot.FlexComponentTypeBox,
+				Layout: linebot.FlexBoxLayoutTypeHorizontal,
+				Contents: []linebot.FlexComponent{
+					&linebot.TextComponent{
+						Type:   linebot.FlexComponentTypeText,
+						Text:   e.Catch,
+						Weight: "bold",
+						Size:   "xl",
+						Align:  "center",
+					},
+					&linebot.TextComponent{
+						Type: linebot.FlexComponentTypeText,
+						Text: "World!",
+					},
+				},
+			},
+		}
+		flexs = append(flexs, contents)
+	}
+	return flexs
 }
