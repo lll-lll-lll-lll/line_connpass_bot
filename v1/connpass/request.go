@@ -45,3 +45,11 @@ func GetUserName() string {
 	}
 	return user
 }
+
+func CreateQuery(values map[string]string) url.Values {
+	q := url.Values{}
+	for k, v := range values {
+		q.Add(k, v)
+	}
+	return q
+}
