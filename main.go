@@ -108,8 +108,8 @@ func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse)
 					&linebot.TextComponent{
 						Type:   linebot.FlexComponentTypeText,
 						Text:   e.Catch,
-						Weight: "bold",
-						Size:   "xl",
+						Weight: linebot.FlexTextWeightTypeRegular,
+						Size:   linebot.FlexTextSizeTypeSm,
 						Align:  "center",
 					},
 					&linebot.BoxComponent{
@@ -153,6 +153,10 @@ func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse)
 						Type:   linebot.FlexComponentTypeButton,
 						Style:  linebot.FlexButtonStyleTypeLink,
 						Height: linebot.FlexButtonHeightTypeSm,
+						Action: linebot.NewURIAction("イベントページへ", e.EventUrl),
+					},
+					&linebot.SeparatorComponent{
+						Type: linebot.FlexComponentTypeSeparator,
 					},
 				},
 			},
