@@ -3,21 +3,23 @@ package v2
 import (
 	"context"
 	"errors"
-	"github.com/line/line-bot-sdk-go/linebot"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	events, e := GetLINEEvents(r.Context())
 	if e != nil {
-		log.Print("no event")
+		log.Println(fmt.Errorf("no events: %s", e))
 		return
 	}
 	bot, e := GetLINEClient(r.Context())
 	if e != nil {
-		log.Panicln("no client")
+		log.Println(fmt.Errorf("no client: %s", e))
 		return
 	}
 
@@ -26,7 +28,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
 				if _, err := bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
-					log.Print(err)
+					log.Println(fmt.Errorf("no reply message: %v", err))
 				}
 			}
 		}
