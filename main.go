@@ -11,7 +11,10 @@ import (
 func main() {
 	lineHandler := http.HandlerFunc(lineV2.LINEWebhookHandler)
 	http.Handle("/callback", lineV2.LINEClientMiddleware(lineHandler))
+	Run()
+}
 
+func Run() {
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
 	if port == "" {
