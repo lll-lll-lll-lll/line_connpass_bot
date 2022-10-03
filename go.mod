@@ -1,4 +1,4 @@
-module github.com/lll-lll-lll-lll/line-connpass
+module github.com/lll-lll-lll-lll/lineconnpass
 
 go 1.19
 
