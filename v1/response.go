@@ -41,6 +41,14 @@ func (c *ConnpassResponse) GetGroupIds() []int {
 	return g
 }
 
+func (c *ConnpassResponse) GetGroupTitles() []string {
+	var g []string
+	for _, v := range c.Events {
+		g = append(g, v.Series.Title)
+	}
+	return g
+}
+
 type Event struct {
 	Series struct {
 		// グループID
