@@ -1,4 +1,4 @@
-package v2
+package v1
 
 import (
 	"context"
@@ -22,6 +22,10 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(fmt.Errorf("no client: %s", e))
 		return
 	}
+
+	go func() {
+
+	}()
 
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {

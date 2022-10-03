@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	lineV2 "github.com/lll-lll-lll-lll/lineconnpass/v2/line"
+	lineV2 "github.com/lll-lll-lll-lll/lineconnpass/v1/line"
 )
 
 func main() {

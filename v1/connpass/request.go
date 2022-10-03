@@ -1,8 +1,7 @@
-package v2
+package v1
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -20,16 +19,15 @@ func NewConnpass() *Connpass {
 	return &Connpass{}
 }
 
-func (c *Connpass) CreateUrl(q url.Values) string {
+func (c *Connpass) CreateUrl(q url.Values) (string, error) {
 	u, err := url.Parse(CONNPASSAPIV1)
 	if err != nil {
-		log.Println(err)
-		return ""
+		return "", fmt.Errorf("%s", err)
 	}
 	u.Scheme = "https"
 	u.Host = "connpass.com"
 	u.RawQuery = q.Encode()
-	return u.String()
+	return u.String(), nil
 }
 
 func (c *Connpass) Request(url string) (*http.Response, error) {
