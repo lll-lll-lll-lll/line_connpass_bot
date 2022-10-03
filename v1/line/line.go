@@ -41,7 +41,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 func LINEClientMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+		// Cloud Run の環境変数から取得している. Cloud Runで環境変数の設定方法を調べといた方がいい
 		bot, err := linebot.New(
 			os.Getenv("CHANNEL_SECRET"),
 			os.Getenv("CHANNEL_TOKEN"),
