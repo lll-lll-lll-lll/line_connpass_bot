@@ -48,3 +48,5 @@ steps:
 images:
   - asia-northeast1-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/lineconbotimage
 # [END cloudbuild_run_example_builddeploy]
+
+# NOTICE: change docker image name
