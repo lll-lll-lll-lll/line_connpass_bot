@@ -80,7 +80,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			case *linebot.TextMessage:
 				if _, err := bot.ReplyMessage(
 					event.ReplyToken,
-					RecursiveCreateConnpassEventFlexMessages(conpass.ConnpassResponse.Events, len(conpass.ConnpassResponse.Events)),
+					RecursiveCreateConnpassEventFlexMessages(conpass.ConnpassResponse.Events, len(conpass.ConnpassResponse.Events)-1),
 				).Do(); err != nil {
 					log.Println(message)
 					return
