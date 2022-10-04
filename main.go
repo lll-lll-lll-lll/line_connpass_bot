@@ -79,13 +79,12 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				if message.Text == "申し込み済みイベント取得" {
-					if _, err := bot.ReplyMessage(
-						event.ReplyToken,
-						flexMessages...,
-					).Do(); err != nil {
-						return
-					}
+				if _, err := bot.ReplyMessage(
+					event.ReplyToken,
+					flexMessages...,
+				).Do(); err != nil {
+					log.Println(message)
+					return
 				}
 			}
 		}
