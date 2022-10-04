@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -40,7 +39,7 @@ func (c *Connpass) Request(conpass *Connpass, query map[string]string) error {
 	}
 	res, err := http.Get(url)
 	if err != nil {
-		return fmt.Errorf("%s", err)
+		return fmt.Errorf("no success connpass api \n %s", err)
 	}
 	defer res.Body.Close()
 	if err := conpass.SetResponse(res); err != nil {
@@ -63,8 +62,4 @@ func CreateQuery(values map[string]string) url.Values {
 		q.Add(k, v)
 	}
 	return q
-}
-
-func RequestToConAPI(ctx context.Context) (context.Context, error) {
-	return ctx, nil
 }
