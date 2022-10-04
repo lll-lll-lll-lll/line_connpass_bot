@@ -52,7 +52,8 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	conpass.ConnpassUSER = user
-	query := map[string]string{"nickname": conpass.ConnpassUSER}
+	// query := map[string]string{"nickname": conpass.ConnpassUSER}
+	query := map[string]string{"keyword": "go"}
 	if err := initRequest(conpass, query); err != nil {
 		log.Println(err)
 		return
