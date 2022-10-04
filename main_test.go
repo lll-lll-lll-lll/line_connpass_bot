@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	linecon "github.com/lll-lll-lll-lll/lineconnpass/v1"
@@ -30,11 +29,8 @@ func TestConnpassAPI(t *testing.T) {
 		return
 	}
 	t.Run("connpass api叩く", func(t *testing.T) {
-		t.Log(RecursiveCreateConnpassEventFlexMessages(con.ConnpassResponse.Events, len(con.ConnpassResponse.Events)-1))
-		for _, e := range con.ConnpassResponse.Events {
-			t.Log(e.Title)
-		}
-		fmt.Println(len(con.ConnpassResponse.Events))
+		t.Log(CreateConnpassEventFlexMessages(con.ConnpassResponse.Events))
+		// fmt.Println(len(con.ConnpassResponse.Events))
 	})
 
 	// t.Run("event test", func(t *testing.T) {
