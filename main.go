@@ -73,7 +73,6 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(fmt.Errorf("no client: %s", e))
 		return
 	}
-	flexMessages := CreateConnpassEventFlexMessages(conpass.ConnpassResponse)
 
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
@@ -81,7 +80,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			case *linebot.TextMessage:
 				if _, err := bot.ReplyMessage(
 					event.ReplyToken,
-					flexMessages...,
+					RecursiveCreateConnpassEventFlexMessages(conpass.ConnpassResponse.Events, len(conpass.ConnpassResponse.Events)),
 				).Do(); err != nil {
 					log.Println(message)
 					return
@@ -91,75 +90,77 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse) []linebot.SendingMessage {
-	var messages []linebot.SendingMessage
-	events := connpassResponse.Events
-	for _, e := range events {
-		joinedNum := strconv.Itoa(e.Accepted)
-		contents := &linebot.BubbleContainer{
-			Type: linebot.FlexContainerTypeBubble,
-			Body: &linebot.BoxComponent{
-				Type:   linebot.FlexComponentTypeBox,
-				Layout: linebot.FlexBoxLayoutTypeVertical,
-				Contents: []linebot.FlexComponent{
-					&linebot.TextComponent{
-						Type:   linebot.FlexComponentTypeText,
-						Text:   e.Title,
-						Weight: linebot.FlexTextWeightTypeRegular,
-						Size:   linebot.FlexTextSizeTypeSm,
-						Align:  "center",
-					},
-					&linebot.BoxComponent{
-						Type:    linebot.FlexComponentTypeBox,
-						Layout:  linebot.FlexBoxLayoutTypeVertical,
-						Margin:  linebot.FlexComponentMarginTypeLg,
-						Spacing: linebot.FlexComponentSpacingTypeSm,
-						Contents: []linebot.FlexComponent{
-							&linebot.BoxComponent{
-								Type:    linebot.FlexComponentTypeBox,
-								Layout:  linebot.FlexBoxLayoutTypeBaseline,
-								Spacing: linebot.FlexComponentSpacingTypeSm,
-								Contents: []linebot.FlexComponent{
-									&linebot.TextComponent{
-										Type:  linebot.FlexComponentTypeText,
-										Text:  "参加者",
-										Color: "#aaaaaa",
-										Size:  linebot.FlexTextSizeTypeSm,
-										Flex:  linebot.IntPtr(1),
-									},
-									&linebot.TextComponent{
-										Type:  linebot.FlexComponentTypeText,
-										Text:  joinedNum,
-										Wrap:  true,
-										Color: "#666666",
-										Size:  linebot.FlexTextSizeTypeSm,
-										Flex:  linebot.IntPtr(3),
-									},
+func RecursiveCreateConnpassEventFlexMessages(events []linecon.Event, cnt int) *linebot.FlexMessage {
+	e := events[cnt]
+	joinedNum := strconv.Itoa(e.Accepted)
+	title := e.Title
+	eventURL := e.EventUrl
+	message := &linebot.BubbleContainer{
+		Type: linebot.FlexContainerTypeBubble,
+		Body: &linebot.BoxComponent{
+			Type:   linebot.FlexComponentTypeBox,
+			Layout: linebot.FlexBoxLayoutTypeVertical,
+			Contents: []linebot.FlexComponent{
+				&linebot.TextComponent{
+					Type:   linebot.FlexComponentTypeText,
+					Text:   title,
+					Weight: linebot.FlexTextWeightTypeRegular,
+					Size:   linebot.FlexTextSizeTypeSm,
+					Align:  "center",
+				},
+				&linebot.BoxComponent{
+					Type:    linebot.FlexComponentTypeBox,
+					Layout:  linebot.FlexBoxLayoutTypeVertical,
+					Margin:  linebot.FlexComponentMarginTypeLg,
+					Spacing: linebot.FlexComponentSpacingTypeSm,
+					Contents: []linebot.FlexComponent{
+						&linebot.BoxComponent{
+							Type:    linebot.FlexComponentTypeBox,
+							Layout:  linebot.FlexBoxLayoutTypeBaseline,
+							Spacing: linebot.FlexComponentSpacingTypeSm,
+							Contents: []linebot.FlexComponent{
+								&linebot.TextComponent{
+									Type:  linebot.FlexComponentTypeText,
+									Text:  "参加者",
+									Color: "#aaaaaa",
+									Size:  linebot.FlexTextSizeTypeSm,
+									Flex:  linebot.IntPtr(1),
+								},
+								&linebot.TextComponent{
+									Type:  linebot.FlexComponentTypeText,
+									Text:  joinedNum,
+									Wrap:  true,
+									Color: "#666666",
+									Size:  linebot.FlexTextSizeTypeSm,
+									Flex:  linebot.IntPtr(3),
 								},
 							},
 						},
 					},
 				},
 			},
-			Footer: &linebot.BoxComponent{
-				Type:    linebot.FlexComponentTypeBox,
-				Layout:  linebot.FlexBoxLayoutTypeVertical,
-				Spacing: linebot.FlexComponentSpacingTypeSm,
-				Contents: []linebot.FlexComponent{
-					&linebot.ButtonComponent{
-						Type:   linebot.FlexComponentTypeButton,
-						Style:  linebot.FlexButtonStyleTypeLink,
-						Height: linebot.FlexButtonHeightTypeSm,
-						Action: linebot.NewURIAction("イベントページへ", e.EventUrl),
-					},
-					&linebot.SeparatorComponent{
-						Type: linebot.FlexComponentTypeSeparator,
-					},
+		},
+		Footer: &linebot.BoxComponent{
+			Type:    linebot.FlexComponentTypeBox,
+			Layout:  linebot.FlexBoxLayoutTypeVertical,
+			Spacing: linebot.FlexComponentSpacingTypeSm,
+			Contents: []linebot.FlexComponent{
+				&linebot.ButtonComponent{
+					Type:   linebot.FlexComponentTypeButton,
+					Style:  linebot.FlexButtonStyleTypeLink,
+					Height: linebot.FlexButtonHeightTypeSm,
+					Action: linebot.NewURIAction("イベントページへ", eventURL),
+				},
+				&linebot.SeparatorComponent{
+					Type: linebot.FlexComponentTypeSeparator,
 				},
 			},
-		}
-		d := linebot.NewFlexMessage("Flex message alt text", contents)
-		messages = append(messages, d)
+		},
 	}
-	return messages
+	flexMess := linebot.NewFlexMessage("Flex message alt text", message)
+	if cnt == 0 {
+		return flexMess
+	}
+	cnt--
+	return RecursiveCreateConnpassEventFlexMessages(events, cnt)
 }
