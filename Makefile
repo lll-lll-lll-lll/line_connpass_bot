@@ -1,4 +1,4 @@
-# create_new_artifact_repo makeでアーティファクトリポ作成してから、groud run作成
+# `create_new_artifact_repo` makeでアーティファクトリポ作成してから、`deploy`でgroud run作成
 deploy:
 	gcloud builds submit --config=cloudbuild.yaml \
     --substitutions=_REPO_NAME=line-con-repo
