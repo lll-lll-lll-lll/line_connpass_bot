@@ -54,8 +54,18 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	conpass.ConnpassUSER = user
-
 	query := map[string]string{"nickname": conpass.ConnpassUSER}
+	if err := initRequest(conpass, query); err != nil {
+		log.Println(err)
+		return
+	}
+
+	seriesId := conpass.JoinGroupIdsByComma()
+	sm := linecon.GetForThreeMonthsEvent()
+	qd := make(map[string]string)
+	qd["series_id"] = seriesId
+	qd["count"] = "100"
+	qd["ym"] = sm
 	q := linecon.CreateQuery(query)
 	conpass.Query = q
 	u, err := conpass.CreateURL(conpass.Query)
@@ -163,4 +173,25 @@ func RecursiveCreateConnpassEventFlexMessages(events []linecon.Event, cnt int) *
 	}
 	cnt--
 	return RecursiveCreateConnpassEventFlexMessages(events, cnt)
+}
+
+func initRequest(c *linecon.Connpass, query map[string]string) error {
+	q := linecon.CreateQuery(query)
+	c.Query = q
+	u, err := c.CreateURL(c.Query)
+	if err != nil {
+		return err
+	}
+	res, err := c.Request(u)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if err := c.SetResponse(res); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	return nil
 }

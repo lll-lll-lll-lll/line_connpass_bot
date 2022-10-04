@@ -31,7 +31,9 @@ func TestConnpassAPI(t *testing.T) {
 	}
 	t.Run("connpass api叩く", func(t *testing.T) {
 		t.Log(RecursiveCreateConnpassEventFlexMessages(con.ConnpassResponse.Events, len(con.ConnpassResponse.Events)-1))
-
+		for _, e := range con.ConnpassResponse.Events {
+			t.Log(e.Title)
+		}
 		fmt.Println(len(con.ConnpassResponse.Events))
 	})
 
