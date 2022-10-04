@@ -3,7 +3,7 @@ deploy:
     --substitutions=_REPO_NAME=line-con-repo
 
 
-_create_new_artifact_repo:
+create_new_artifact_repo:
 	gcloud artifacts repositories create line-con-repo --location=asia-northeast1 --repository-format=docker
 
 _repo_list:

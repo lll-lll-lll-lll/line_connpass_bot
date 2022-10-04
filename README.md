@@ -10,10 +10,7 @@
 
 
 ## Google Cloudの環境変数
-- `USER`
+<!-- - `USER` -->
 - `CHANNEL_TOKEN`
 - `CHANNEL_SECRET`
 
-
-
-[再帰関数実装のplayground](https://go.dev/play/p/7ZNvqpUzrnq)
