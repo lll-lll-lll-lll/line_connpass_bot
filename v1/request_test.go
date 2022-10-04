@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -28,6 +29,7 @@ func TestConnpassAPI(t *testing.T) {
 			return
 		}
 		groups := con.ConnpassResponse.GetGroupIds()
+		fmt.Println(con.ConnpassResponse.Events[0].Title)
 		groupsNum := len(groups)
 		t.Log(groups)
 		if groupsNum != 10 {

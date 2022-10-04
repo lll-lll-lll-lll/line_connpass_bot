@@ -107,7 +107,7 @@ func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse)
 				Contents: []linebot.FlexComponent{
 					&linebot.TextComponent{
 						Type:   linebot.FlexComponentTypeText,
-						Text:   e.Catch,
+						Text:   e.Title,
 						Weight: linebot.FlexTextWeightTypeRegular,
 						Size:   linebot.FlexTextSizeTypeSm,
 						Align:  "center",
