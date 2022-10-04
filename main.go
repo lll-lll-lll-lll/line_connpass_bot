@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	linecon "github.com/lll-lll-lll-lll/lineconnpass/v1"
+	linecon "github.com/lll-lll-lll-lll/lineconnpass/pkg"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 )
