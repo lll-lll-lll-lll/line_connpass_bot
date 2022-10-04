@@ -66,7 +66,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	qd["series_id"] = seriesId
 	qd["count"] = "100"
 	qd["ym"] = sm
-	q := linecon.CreateQuery(query)
+	q := linecon.CreateQuery(qd)
 	conpass.Query = q
 	u, err := conpass.CreateURL(conpass.Query)
 	if err != nil {
