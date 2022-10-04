@@ -79,23 +79,21 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				for _, flexMessage := range flexMessages {
-					if _, err := bot.ReplyMessage(
-						event.ReplyToken,
-						linebot.NewFlexMessage("Flex message alt text", flexMessage),
-					).Do(); err != nil {
-						log.Println(message)
-						return
-					}
+				if _, err := bot.ReplyMessage(
+					event.ReplyToken,
+					flexMessages...,
+				).Do(); err != nil {
+					log.Println(message)
+					return
 				}
 			}
 		}
 	}
 }
 
-func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse) []*linebot.BubbleContainer {
-
-	flexs := []*linebot.BubbleContainer{}
+func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse) []linebot.SendingMessage {
+	var messages []linebot.SendingMessage
+	// flexs := []*linebot.FlexMessage{}
 	events := connpassResponse.Events
 	for _, e := range events {
 		joinedNum := strconv.Itoa(e.Accepted)
@@ -161,7 +159,8 @@ func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse)
 				},
 			},
 		}
-		flexs = append(flexs, contents)
+		d := linebot.NewFlexMessage("Flex message alt text", contents)
+		messages = append(messages, d)
 	}
-	return flexs
+	return messages
 }
