@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 )
@@ -64,4 +65,79 @@ func GetLINEClient(ctx context.Context) (*linebot.Client, error) {
 		return nil, errors.New("client bot not found")
 	}
 	return bot, nil
+}
+
+// CreateConnpassEventFlexMessages cntの数値分だけeventからflex messageを作成する再帰関数
+func CreateConnpassEventFlexMessages(events []Event) []linebot.SendingMessage {
+	var flexs []linebot.SendingMessage
+	for _, e := range events {
+		joinedNum := strconv.Itoa(e.Accepted)
+		title := e.Title
+		eventURL := e.EventUrl
+		message := &linebot.BubbleContainer{
+			Type: linebot.FlexContainerTypeBubble,
+			Body: &linebot.BoxComponent{
+				Type:   linebot.FlexComponentTypeBox,
+				Layout: linebot.FlexBoxLayoutTypeVertical,
+				Contents: []linebot.FlexComponent{
+					&linebot.TextComponent{
+						Type:   linebot.FlexComponentTypeText,
+						Text:   title,
+						Weight: linebot.FlexTextWeightTypeRegular,
+						Size:   linebot.FlexTextSizeTypeSm,
+						Align:  "center",
+					},
+					&linebot.BoxComponent{
+						Type:    linebot.FlexComponentTypeBox,
+						Layout:  linebot.FlexBoxLayoutTypeVertical,
+						Margin:  linebot.FlexComponentMarginTypeLg,
+						Spacing: linebot.FlexComponentSpacingTypeSm,
+						Contents: []linebot.FlexComponent{
+							&linebot.BoxComponent{
+								Type:    linebot.FlexComponentTypeBox,
+								Layout:  linebot.FlexBoxLayoutTypeBaseline,
+								Spacing: linebot.FlexComponentSpacingTypeSm,
+								Contents: []linebot.FlexComponent{
+									&linebot.TextComponent{
+										Type:  linebot.FlexComponentTypeText,
+										Text:  "参加者",
+										Color: "#aaaaaa",
+										Size:  linebot.FlexTextSizeTypeSm,
+										Flex:  linebot.IntPtr(1),
+									},
+									&linebot.TextComponent{
+										Type:  linebot.FlexComponentTypeText,
+										Text:  joinedNum,
+										Wrap:  true,
+										Color: "#666666",
+										Size:  linebot.FlexTextSizeTypeSm,
+										Flex:  linebot.IntPtr(3),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Footer: &linebot.BoxComponent{
+				Type:    linebot.FlexComponentTypeBox,
+				Layout:  linebot.FlexBoxLayoutTypeVertical,
+				Spacing: linebot.FlexComponentSpacingTypeSm,
+				Contents: []linebot.FlexComponent{
+					&linebot.ButtonComponent{
+						Type:   linebot.FlexComponentTypeButton,
+						Style:  linebot.FlexButtonStyleTypeLink,
+						Height: linebot.FlexButtonHeightTypeSm,
+						Action: linebot.NewURIAction("イベントページへ", eventURL),
+					},
+					&linebot.SeparatorComponent{
+						Type: linebot.FlexComponentTypeSeparator,
+					},
+				},
+			},
+		}
+		flexMess := linebot.NewFlexMessage("Flex message alt text", message)
+		flexs = append(flexs, flexMess)
+	}
+	return flexs
 }

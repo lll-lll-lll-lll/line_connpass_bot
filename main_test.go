@@ -29,7 +29,7 @@ func TestConnpassAPI(t *testing.T) {
 		return
 	}
 	t.Run("connpass api叩く", func(t *testing.T) {
-		t.Log(CreateConnpassEventFlexMessages(con.ConnpassResponse.Events))
+		t.Log(linecon.CreateConnpassEventFlexMessages(con.ConnpassResponse.Events))
 		// fmt.Println(len(con.ConnpassResponse.Events))
 	})
 
