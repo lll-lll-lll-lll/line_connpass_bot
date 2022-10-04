@@ -100,6 +100,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// RecursiveCreateConnpassEventFlexMessages cntの数値分だけeventからflex messageを作成する再帰関数
 func RecursiveCreateConnpassEventFlexMessages(events []linecon.Event, cnt int) *linebot.FlexMessage {
 	e := events[cnt]
 	joinedNum := strconv.Itoa(e.Accepted)
