@@ -94,7 +94,6 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 func CreateConnpassEventFlexMessages(connpassResponse *linecon.ConnpassResponse) []linebot.SendingMessage {
 	var messages []linebot.SendingMessage
-	// flexs := []*linebot.FlexMessage{}
 	events := connpassResponse.Events
 	for _, e := range events {
 		joinedNum := strconv.Itoa(e.Accepted)
