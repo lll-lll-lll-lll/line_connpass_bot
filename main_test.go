@@ -12,23 +12,13 @@ func TestConnpassAPI(t *testing.T) {
 	t.Run("connpass api叩く", func(t *testing.T) {
 		conpass := linecon.NewConnpass()
 		query := map[string]string{"keyword": "go"}
-		q := linecon.CreateQuery(query)
-		conpass.Query = q
-		u, err := conpass.CreateURL(conpass.Query)
+
+		err := conpass.Request(conpass, query)
 		if err != nil {
 			log.Println(fmt.Errorf("no client: %s", err))
 			return
 		}
-		res, err := conpass.Request(u)
-		if err != nil {
-			log.Println(fmt.Errorf("no client: %s", err))
-			return
-		}
-		defer res.Body.Close()
-		if err := conpass.SetResponse(res); err != nil {
-			log.Println(fmt.Errorf("no client: %s", err))
-			return
-		}
+
 		t.Log(conpass.ConnpassResponse.ResultsReturned)
 		for _, v := range conpass.ConnpassResponse.Events {
 			t.Log(v.Title)

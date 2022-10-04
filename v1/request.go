@@ -31,12 +31,22 @@ func (c *Connpass) CreateURL(q url.Values) (string, error) {
 	return u.String(), nil
 }
 
-func (c *Connpass) Request(url string) (*http.Response, error) {
+func (c *Connpass) Request(conpass *Connpass, query map[string]string) error {
+	q := CreateQuery(query)
+	conpass.Query = q
+	url, err := conpass.CreateURL(conpass.Query)
+	if err != nil {
+		return err
+	}
 	res, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("%s", err)
+		return fmt.Errorf("%s", err)
 	}
-	return res, nil
+	defer res.Body.Close()
+	if err := conpass.SetResponse(res); err != nil {
+		return fmt.Errorf("no client: %s", err)
+	}
+	return nil
 }
 
 func GetUserName() string {

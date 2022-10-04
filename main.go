@@ -44,36 +44,10 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(fmt.Errorf("no client: %s", e))
 		return
 	}
-
 	conpass := linecon.NewConnpass()
-	// query := map[string]string{"nickname": conpass.ConnpassUSER}
-	// if err := initRequest(conpass, query); err != nil {
-	// 	log.Println(err)
-	// 	return
-	// }
-
-	//seriesId := conpass.JoinGroupIdsByComma()
-	//sm := linecon.GetForThreeMonthsEvent()
-	//qd := make(map[string]string)
-	//qd["series_id"] = seriesId
-	//qd["count"] = "100"
-	//qd["ym"] = sm
 	query := map[string]string{"keyword": "go"}
-	q := linecon.CreateQuery(query)
-	conpass.Query = q
-	u, err := conpass.CreateURL(conpass.Query)
-	if err != nil {
-		log.Println(fmt.Errorf("no client: %s", e))
-		return
-	}
-	res, err := conpass.Request(u)
-	if err != nil {
-		log.Println(fmt.Errorf("no client: %s", e))
-		return
-	}
-	defer res.Body.Close()
-	if err := conpass.SetResponse(res); err != nil {
-		log.Println(fmt.Errorf("no client: %s", e))
+	if err := conpass.Request(conpass, query); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -84,7 +58,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 			case *linebot.TextMessage:
 				if _, err := bot.ReplyMessage(
 					event.ReplyToken,
-					flexsMessages[:4]...,
+					flexsMessages[:5]...,
 				).Do(); err != nil {
 					log.Println(message)
 					return
@@ -96,22 +70,10 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 // dbを用意してないので、最初にグループIDを取得するためのメソッド
 func initRequest(c *linecon.Connpass, query map[string]string) error {
-	q := linecon.CreateQuery(query)
-	c.Query = q
-	u, err := c.CreateURL(c.Query)
+
+	err := c.Request(c, query)
 	if err != nil {
 		return err
 	}
-	res, err := c.Request(u)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if err := c.SetResponse(res); err != nil {
-		log.Println(err)
-		return err
-	}
-
 	return nil
 }
