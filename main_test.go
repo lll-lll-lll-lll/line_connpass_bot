@@ -1,46 +1,40 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"testing"
 
 	linecon "github.com/lll-lll-lll-lll/lineconnpass/v1"
 )
 
 func TestConnpassAPI(t *testing.T) {
-	con := linecon.NewConnpass()
-	con.ConnpassUSER = "Shun_Pei"
-	query := map[string]string{"nickname": con.ConnpassUSER}
-	q := linecon.CreateQuery(query)
-	con.Query = q
-	u, err := con.CreateURL(con.Query)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	res, err := con.Request(u)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	defer res.Body.Close()
-
-	if err := con.SetResponse(res); err != nil {
-		t.Error(err)
-		return
-	}
 	t.Run("connpass api叩く", func(t *testing.T) {
-		t.Log(linecon.CreateConnpassEventFlexMessages(con.ConnpassResponse.Events))
-		// fmt.Println(len(con.ConnpassResponse.Events))
+		conpass := linecon.NewConnpass()
+		query := map[string]string{"keyword": "go"}
+		q := linecon.CreateQuery(query)
+		conpass.Query = q
+		u, err := conpass.CreateURL(conpass.Query)
+		if err != nil {
+			log.Println(fmt.Errorf("no client: %s", err))
+			return
+		}
+		res, err := conpass.Request(u)
+		if err != nil {
+			log.Println(fmt.Errorf("no client: %s", err))
+			return
+		}
+		defer res.Body.Close()
+		if err := conpass.SetResponse(res); err != nil {
+			log.Println(fmt.Errorf("no client: %s", err))
+			return
+		}
+		t.Log(conpass.ConnpassResponse.ResultsReturned)
+		for _, v := range conpass.ConnpassResponse.Events {
+			t.Log(v.Title)
+			t.Log("series title", v.Series.Title)
+		}
+		t.Log(linecon.CreateConnpassEventFlexMessages(conpass.ConnpassResponse.Events))
 	})
 
-	// t.Run("event test", func(t *testing.T) {
-	// 	events := con.ConnpassResponse.Events
-	// 	fmt.Println(len(events))
-	// 	for _, v := range events {
-	// 		fmt.Print(v.Title, "---")
-	// 		fmt.Print(v.Accepted, "---")
-	// 		fmt.Print(v.EventUrl, "---")
-	// 		fmt.Println("")
-	// 	}
-	// })
 }

@@ -46,26 +46,20 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	conpass := linecon.NewConnpass()
-	user := linecon.GetUserName()
-	if user == "" {
-		log.Println(fmt.Errorf("no client: %s", e))
-		return
-	}
-	conpass.ConnpassUSER = user
 	// query := map[string]string{"nickname": conpass.ConnpassUSER}
-	query := map[string]string{"keyword": "go"}
-	if err := initRequest(conpass, query); err != nil {
-		log.Println(err)
-		return
-	}
+	// if err := initRequest(conpass, query); err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
 
-	seriesId := conpass.JoinGroupIdsByComma()
-	sm := linecon.GetForThreeMonthsEvent()
-	qd := make(map[string]string)
-	qd["series_id"] = seriesId
-	qd["count"] = "100"
-	qd["ym"] = sm
-	q := linecon.CreateQuery(qd)
+	//seriesId := conpass.JoinGroupIdsByComma()
+	//sm := linecon.GetForThreeMonthsEvent()
+	//qd := make(map[string]string)
+	//qd["series_id"] = seriesId
+	//qd["count"] = "100"
+	//qd["ym"] = sm
+	query := map[string]string{"keyword": "go"}
+	q := linecon.CreateQuery(query)
 	conpass.Query = q
 	u, err := conpass.CreateURL(conpass.Query)
 	if err != nil {
