@@ -29,7 +29,8 @@ func (c *Connpass) CreateURL(q url.Values) (string, error) {
 	u.RawQuery = q.Encode()
 	return u.String(), nil
 }
-
+//Request ConnpassAPIにリクエスト
+//query keyがプロパティ. valueが値
 func (c *Connpass) Request(conpass *Connpass, query map[string]string) error {
 	q := CreateQuery(query)
 	conpass.Query = q
