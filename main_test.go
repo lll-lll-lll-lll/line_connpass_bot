@@ -5,7 +5,7 @@ import (
 	"log"
 	"testing"
 
-	linecon "github.com/lll-lll-lll-lll/lineconnpass/pkg"
+	linecon "github.com/lll-lll-lll-lll/lineconnpass/src"
 )
 
 func TestConnpassAPI(t *testing.T) {
