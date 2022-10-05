@@ -15,5 +15,5 @@
 目的もたず作っていて途中で断念。本当に作りたいものができたら再開しようと思う
 
 # できること
-- Connpass構造体のRequestメソッドに`key`がconnpassAPIのパラメータで`value`がqueryの値の`map`を渡してapiを叩ける<br>
+- Connpass構造体のRequestメソッドに`key`がconnpassAPIのパラメータで`value`がqueryの値の`map`を渡せばapiを叩ける<br>
 - context.Contextに初期化した`linebot.Client`を入れて値の伝播してる
