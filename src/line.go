@@ -68,7 +68,7 @@ func GetLINEClient(ctx context.Context) (*linebot.Client, error) {
 	return bot, nil
 }
 
-// CreateConnpassEventFlexMessages cntの数値分だけeventからflex messageを作成する再帰関数
+// CreateConnpassEventFlexMessages コンパスのイベント情報を含んだFlexMessageを作成
 func CreateConnpassEventFlexMessages(e Event) linebot.SendingMessage {
 	joinedNum := strconv.Itoa(e.Accepted)
 	title := e.Title
