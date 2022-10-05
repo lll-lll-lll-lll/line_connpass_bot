@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -136,4 +137,42 @@ func CreateConnpassEventFlexMessages(e Event) linebot.SendingMessage {
 	}
 	flexMess := linebot.NewFlexMessage("Flex message alt text", message)
 	return flexMess
+}
+
+func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
+	events, e := GetLINEEvents(r.Context())
+	if e != nil {
+		log.Println(fmt.Errorf("no events: %s", e))
+		return
+	}
+	bot, e := GetLINEClient(r.Context())
+	if e != nil {
+		log.Println(fmt.Errorf("no client: %s", e))
+		return
+	}
+	conpass := NewConnpass()
+	query := map[string]string{"keyword": "go"}
+	if err := conpass.Request(conpass, query); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	for _, event := range events {
+		if event.Type == linebot.EventTypeMessage {
+			switch message := event.Message.(type) {
+			case *linebot.TextMessage:
+				for _, e := range conpass.ConnpassResponse.Events {
+					flexMessage := CreateConnpassEventFlexMessages(e)
+					if _, err := bot.ReplyMessage(
+						event.ReplyToken,
+						flexMessage,
+					).Do(); err != nil {
+						log.Println(message)
+						return
+					}
+				}
+
+			}
+		}
+	}
 }
