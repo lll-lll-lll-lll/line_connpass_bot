@@ -18,4 +18,4 @@
 # できること
 - `go`をキーワードに５件取得検索
 - Connpass構造体のRequestメソッドに`key`がconnpassAPIのパラメータで`value`がqueryの値の`map`を渡せばapiを叩ける<br>
-- context.Contextに初期化した`linebot.Client`を入れて値の伝播してる
+- `LINEClientMiddleware()`でcontext.Contextに初期化した`linebot.Client`を入れて値の伝播してる
