@@ -51,18 +51,21 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	flexsMessages := linecon.CreateConnpassEventFlexMessages(conpass.ConnpassResponse.Events)
 	for _, event := range events {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				if _, err := bot.ReplyMessage(
-					event.ReplyToken,
-					flexsMessages[:5]...,
-				).Do(); err != nil {
-					log.Println(message)
-					return
+				for _, e := range conpass.ConnpassResponse.Events {
+					flexMessage := linecon.CreateConnpassEventFlexMessages(e)
+					if _, err := bot.ReplyMessage(
+						event.ReplyToken,
+						flexMessage,
+					).Do(); err != nil {
+						log.Println(message)
+						return
+					}
 				}
+
 			}
 		}
 	}

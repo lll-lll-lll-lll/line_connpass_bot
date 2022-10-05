@@ -21,10 +21,11 @@ func TestConnpassAPI(t *testing.T) {
 
 		t.Log(conpass.ConnpassResponse.ResultsReturned)
 		for _, v := range conpass.ConnpassResponse.Events {
-			t.Log(v.Title)
-			t.Log("series title", v.Series.Title)
+			s := linecon.CreateConnpassEventFlexMessages(v)
+			// fmt.Printf("%T", s)
+			t.Log(s)
 		}
-		t.Log(linecon.CreateConnpassEventFlexMessages(conpass.ConnpassResponse.Events))
+
 	})
 
 }
