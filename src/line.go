@@ -25,7 +25,6 @@ func LINEClientMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		ctx := r.Context()
-		// clientをハンドラー間で共有するためにコンテキストに登録
 		ctx = SetLINEClientCtx(ctx, bot)
 		events, err := bot.ParseRequest(r)
 		if err != nil {
@@ -44,10 +43,12 @@ func LINEClientMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// SetLINEClientCtx 初期化したbotをcontextに保存するメソッド
 func SetLINEClientCtx(ctx context.Context, bot *linebot.Client) context.Context {
 	return context.WithValue(ctx, linebot.Client{}, bot)
 }
 
+// SetLINEEventsCtx LINEのイベントを保存するメソッド
 func SetLINEEventsCtx(ctx context.Context, events []*linebot.Event) context.Context {
 	return context.WithValue(ctx, "events", events)
 }
@@ -174,6 +175,7 @@ func LINEWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// CreateConnpassEventFlexMessagesOnlyFive ５つのFlexMessageを作成
 func CreateConnpassEventFlexMessagesOnlyFive(events []Event) []linebot.SendingMessage {
 	var messages []linebot.SendingMessage
 	for i, e := range events {

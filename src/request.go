@@ -39,7 +39,7 @@ func (c *Connpass) Request(conpass *Connpass, query map[string]string) error {
 	}
 	res, err := http.Get(url)
 	if err != nil {
-		return fmt.Errorf("no success connpass api \n %s", err)
+		return fmt.Errorf("not success request to connpass api \n %s", err)
 	}
 	defer res.Body.Close()
 	if err := conpass.SetResponse(res); err != nil {
